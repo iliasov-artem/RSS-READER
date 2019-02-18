@@ -1,3 +1,1 @@
-import 'bootstrap';
-
-console.log('RSS-READER');
+import 'bootstrap/dist/css/bootstrap.min.css';

@@ -1,6 +1,8 @@
+
 install:
 	npm install
 lint:
-	npx eslint  .
-test:
-	npm test
+	npx eslint .	
+build:
+	npm run deploy
+	surge ./dist rss-art-il.surge.sh/
