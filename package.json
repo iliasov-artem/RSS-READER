@@ -4,7 +4,6 @@
   "description": "rss-reader",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "webpack"
   },
   "repository": {
@@ -43,6 +42,7 @@
     "webpack-cli": "^3.2.1"
   },
   "dependencies": {
-    "bootstrap": "^4.2.1"
+    "bootstrap": "^4.2.1",
+    "eslint-plugin-jest": "^22.3.0"
   }
 }
