@@ -4,15 +4,18 @@
     <title>Webpack Package</title>
   </head>
   <body>
-    <div class="jumbotron">
-      <h1 class="display-4">Rss-Reader</h1>
-      <form>
-        <div class="form-group">
-          <label for="source">Enter URL to read rss-news</label>
-          <input type="text" id="source" class="form-control" placeholder="enter url" value=''>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+    <div class="container">
+      <div class="jumbotron">
+        <h1 class="display-4">Rss-Reader</h1>
+        <form>
+          <div class="form-group">
+            <label for="source">Enter URL to read rss-news</label>
+            <input type="text" id="source" class="form-control" placeholder="enter url" value=''>
+          </div>
+          <button type="submit" class="btn btn-primary" disabled>Submit</button>
+        </form>
+      </div>
+      <div class="feed"></div>
     </div>
   </body>
 </html>
