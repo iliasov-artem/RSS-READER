@@ -58,7 +58,7 @@ export default () => {
       button.disabled = true;
     }
   });
-  watch(state, 'processing', () =>{
+  watch(state, 'processing', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
     if (state.processing) {
