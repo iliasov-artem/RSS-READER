@@ -64,6 +64,7 @@ export default () => {
     }
     if (state.inputValue === '') {
       input.classList.remove('is-invalid');
+      button.disabled = true;
     }
   });
   watch(state, 'rssTitle', () => {
