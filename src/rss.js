@@ -41,7 +41,6 @@ export default () => {
     });
   });
   watch(state, 'inputValue', () => {
-    const input = document.querySelector('input');
     input.value = state.inputValue;
     const button = document.querySelector('button');
     if (state.inputValid) {
@@ -60,13 +59,12 @@ export default () => {
     }
   });
   watch(state, 'processing', () =>{
-    const input = document.querySelector('input');
     input.value = state.inputValue;
     const button = document.querySelector('button');
     if (state.processing) {
       button.disabled = true;
       input.disabled = true;
-      button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
     } else {
       button.disabled = true;
       input.disabled = false;
