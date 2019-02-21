@@ -1,3 +1,5 @@
+// import renderModal from './renderModal';
+
 export default (data) => {
   const { title, description, items } = data;
   const div = document.querySelector('.feed');
