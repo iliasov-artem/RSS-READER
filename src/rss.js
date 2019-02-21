@@ -54,12 +54,12 @@ export default () => {
       button.disabled = true;
     }
     if (state.processing) {
-      document.querySelector('button').disabled = true;
-      document.getElementById('source').disabled = true;
+      button.disabled = true;
+      input.disabled = true;
       button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     } else {
-      document.querySelector('button').disabled = false;
-      document.getElementById('source').disabled = false;
+      button.disabled = false;
+      input.disabled = false;
       button.textContent = 'Submit';
     }
     if (state.inputValue === '') {
