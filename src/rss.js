@@ -40,7 +40,7 @@ export default () => {
       console.log(err);
     });
   });
-  watch(state, ['inputValue', 'processing'], () => {
+  watch(state, 'inputValue', () => {
     const input = document.querySelector('input');
     input.value = state.inputValue;
     const button = document.querySelector('button');
@@ -53,18 +53,24 @@ export default () => {
       input.classList.add('is-invalid');
       button.disabled = true;
     }
+
+    if (state.inputValue === '') {
+      input.classList.remove('is-invalid');
+      button.disabled = true;
+    }
+  });
+  watch(state, 'processing', () =>{
+    const input = document.querySelector('input');
+    input.value = state.inputValue;
+    const button = document.querySelector('button');
     if (state.processing) {
       button.disabled = true;
       input.disabled = true;
       button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
     } else {
-      button.disabled = false;
+      button.disabled = true;
       input.disabled = false;
       button.textContent = 'Submit';
-    }
-    if (state.inputValue === '') {
-      input.classList.remove('is-invalid');
-      button.disabled = true;
     }
   });
   watch(state, 'rssTitle', () => {
