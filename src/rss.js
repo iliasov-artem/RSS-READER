@@ -4,6 +4,7 @@ import WatchJS from 'melanke-watchjs';
 import renderHTML from './render';
 import parseXML from './parser';
 
+
 const { watch } = WatchJS;
 const corsHost = 'https://cors-anywhere.herokuapp.com/';
 
