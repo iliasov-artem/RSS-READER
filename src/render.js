@@ -2,13 +2,12 @@ import renderModal from './renderModal';
 
 const modalBtnHandler = (event) => {
   const currentBtn = event.target;
-  const title = currentBtn.querySelector('.new-modal-title').textContent;
-  const description = currentBtn.querySelector('div');
-  description.classList.remove('d-none');
   const modalBody = document.querySelector('.modal-body');
+  const title = currentBtn.querySelector('.new-modal-title').textContent;
+  const description = currentBtn.querySelector('.modal-description');
   const modalTitle = document.querySelector('.modal-title');
   modalTitle.innerHTML = title;
-  modalBody.appendChild(description);
+  modalBody.innerHTML = description.innerHTML;
 };
 export default (data) => {
   const { title, description, items } = data;
