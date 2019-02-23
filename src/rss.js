@@ -1,6 +1,7 @@
 import validator from 'validator';
 import axios from 'axios';
 import WatchJS from 'melanke-watchjs';
+import renderPopup from './renderPopup';
 import renderHTML from './render';
 import parseXML from './parser';
 
@@ -13,9 +14,11 @@ export default () => {
     inputValue: '',
     inputValid: false,
     processing: false,
+    stateUI: 'downtime',
     currentRssChannel: '',
+    message: '',
     rss: {},
-    rssTitle: '',
+    feeds: [],
   };
   const input = document.getElementById('source');
   input.addEventListener('input', (e) => {
@@ -28,15 +31,19 @@ export default () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     state.processing = true;
+    state.stateUI = 'loading';
     axios.get(`${corsHost}${input.value}`).then((response) => {
       state.currentRssChannel = input.value;
       state.rss = parseXML(response);
-      // state.rssTitle = state.rss.title;
       state.inputValue = '';
       state.inputValid = false;
       state.processing = false;
+      state.stateUI = 'downtime';
+      state.feeds = [...state.feeds, state.rss];
     }).catch((err) => {
       state.processing = false;
+      state.stateUI = 'downtime';
+      state.message = 'Please check your link. RSS feed does not available rigth now!';
       console.log(err);
     });
   });
@@ -77,7 +84,7 @@ export default () => {
       button.disabled = true;
     }
   });
-  watch(state, 'processing', () => {
+  watch(state, ['processing', 'stateUI'], () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
     if (state.processing) {
@@ -93,4 +100,5 @@ export default () => {
   watch(state, 'rss', () => {
     renderHTML(state.rss);
   });
+  watch(state, 'message', () => renderPopup(state.message));
 };
