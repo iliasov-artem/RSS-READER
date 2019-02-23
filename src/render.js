@@ -17,8 +17,6 @@ export default (data) => {
     const itemTitle = item.querySelector('title').textContent;
     const itemLink = item.querySelector('link').textContent;
     const itemDesription = item.querySelector('description').textContent;
-    //  const itemPubDate = item.querySelector('pubDate').textContent;
-    //  const btnId = Math.round(new Date(itemPubDate).getTime() / 1000).toString();
     const modal = renderModal(itemTitle, itemDesription, index);
     return `<li class="list-group-item py-2">${modal}<a href="${itemLink}" disabled>      ${itemTitle}</a></li>`;
   }).join('')

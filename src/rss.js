@@ -23,7 +23,6 @@ export default () => {
     const { value } = e.target;
     state.inputValue = value;
     state.inputValid = validator.isURL(value) && value !== state.currentRssChannel;
-    console.log(`${state.inputValid}${state.inputValue}`);
   });
   const form = document.querySelector('form');
   form.addEventListener('submit', (e) => {
@@ -32,7 +31,7 @@ export default () => {
     axios.get(`${corsHost}${input.value}`).then((response) => {
       state.currentRssChannel = input.value;
       state.rss = parseXML(response);
-      state.rssTitle = state.rss.title;
+      // state.rssTitle = state.rss.title;
       state.inputValue = '';
       state.inputValid = false;
       state.processing = false;
@@ -41,6 +40,25 @@ export default () => {
       console.log(err);
     });
   });
+  const updateChecker = () => {
+    if (state.currentRssChannel) {
+      const latestNews = state.rss.items[0];
+      // const latestNewsTitle = latestNews.querySelector('title').textContent;
+      const latestNewsPub = latestNews.querySelector('pubDate').textContent;
+      const sec = Math.round(new Date(latestNewsPub).getTime() / 1000).toString();
+      axios.get(`${corsHost}${state.currentRssChannel}`).then((response) => {
+        const { items } = parseXML(response);
+        const newsToAdd = items.filter((item) => {
+          const date = item.querySelector('pubDate').textContent;
+          const dateSec = Math.round(new Date(date).getTime() / 1000).toString();
+          return dateSec > sec;
+        });
+        const newItems = [...newsToAdd, ...state.rss.items];
+        state.rss.items = newItems;
+      });
+    }
+  };
+  setInterval(updateChecker, 5000);
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
@@ -72,7 +90,7 @@ export default () => {
       button.textContent = 'Submit';
     }
   });
-  watch(state, 'rssTitle', () => {
+  watch(state, 'rss', () => {
     renderHTML(state.rss);
   });
 };
