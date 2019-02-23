@@ -9,19 +9,46 @@ const modalBtnHandler = (event) => {
   modalTitle.innerHTML = title;
   modalBody.innerHTML = description.innerHTML;
 };
+
+
 export default (data) => {
-  const { title, description, items } = data;
-  const div = document.querySelector('.feed');
-  const rssTitle = `<h2>${title}</h2><p>${description}</p><br><br>`;
-  const rssFeed = `<ul class="list-group-flush justify-content-left">${items.map((item, index) => {
-    const itemTitle = item.querySelector('title').textContent;
-    const itemLink = item.querySelector('link').textContent;
-    const itemDesription = item.querySelector('description').textContent;
-    const modal = renderModal(itemTitle, itemDesription, index);
-    return `<li class="list-group-item py-2">${modal}<a href="${itemLink}" disabled>      ${itemTitle}</a></li>`;
-  }).join('')
-  }</ul>`;
-  div.innerHTML = `${rssTitle}${rssFeed}`;
+  const channels = `<ul class="nav nav-pills" role="tablist">
+    ${data.map(({ title, description, id }) => {
+    console.log(description);
+    return (`
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="pill" href="#${id}">${title}</a>
+      </li>
+      `);
+  }).join('')}
+  </ul>`;
+  const feed = `<div class="tab-content">
+    ${data.map(({ items, id }) => {
+    console.log(items);
+    return (`
+        <div id="${id}" class="container tab-pane"><br>
+          <ul class="list-group-flush">
+            ${items.map((item) => {
+        const itemTitle = item.querySelector('title').textContent;
+        const itemLink = item.querySelector('link').textContent;
+        const itemDesription = item.querySelector('description').textContent;
+        const modal = renderModal(itemTitle, itemDesription);
+        return `<li class="list-group-item py-2">${modal}<a href="${itemLink}" disabled>${itemTitle}</a></li>`;
+      }).join('')}
+          </ul>
+        </div>
+      `);
+  })}
+  </div>`;
+  const feedList = document.querySelector('.feed-list');
+  const feedNews = document.querySelector('.feed');
+  feedList.innerHTML = `${channels}`;
+  feedNews.innerHTML = `${feed}`;
+  const { id } = data[0];
+  const activeFeed = document.getElementById(id);
+  const activeChannel = document.querySelector(`a[href="#${id}"]`);
+  activeFeed.classList.add('active');
+  activeChannel.classList.add('active');
   const modalButtons = document.querySelectorAll('[data-target="#myModal"]');
   modalButtons.forEach((btn) => {
     btn.addEventListener('click', modalBtnHandler);

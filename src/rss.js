@@ -34,15 +34,15 @@ export default () => {
     axios.get(link).then((response) => {
       state.currentRssChannel = input.value;
       state.rss = parseXML(response);
-      state.inputValue = '';
       state.inputValidity = 'invalid';
+      state.inputValue = '';
       state.processing = 'downtime';
-      state.feeds = [...state.feeds, state.rss];
+      state.feeds = [state.rss, ...state.feeds];
     }).catch((err) => {
       state.processing = 'downtime';
       state.message = 'Please check your link. RSS feed does not available rigth now!';
-      state.inputValue = '';
       state.inputValidity = 'invalid';
+      state.inputValue = '';
       console.log(err);
     });
   });
@@ -68,6 +68,7 @@ export default () => {
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
+    console.log(button);
     switch (state.inputValidity) {
       case 'valid':
         input.classList.remove('is-invalid');
@@ -87,7 +88,6 @@ export default () => {
     const button = document.querySelector('button');
     switch (state.processing) {
       case 'downtime':
-        button.disabled = false;
         input.disabled = false;
         button.textContent = 'Sign In';
         break;
@@ -99,8 +99,6 @@ export default () => {
       default: break;
     }
   });
-  watch(state, 'rss', () => {
-    renderHTML(state.rss);
-  });
+  watch(state, 'rss', () => renderHTML(state.feeds));
   watch(state, 'message', () => renderPopup(state.message));
 };
