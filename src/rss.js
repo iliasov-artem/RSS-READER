@@ -12,9 +12,8 @@ const corsHost = 'https://cors-anywhere.herokuapp.com/';
 export default () => {
   const state = {
     inputValue: '',
-    inputValid: false,
-    processing: false,
-    stateUI: 'downtime',
+    inputValidity: 'invalid',
+    processing: 'downtime',
     currentRssChannel: '',
     message: '',
     rss: {},
@@ -25,25 +24,25 @@ export default () => {
     e.preventDefault();
     const { value } = e.target;
     state.inputValue = value;
-    state.inputValid = validator.isURL(value) && value !== state.currentRssChannel;
+    state.inputValidity = (validator.isURL(value) && value !== state.currentRssChannel) ? 'valid' : 'invalid';
   });
   const form = document.querySelector('form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    state.processing = true;
-    state.stateUI = 'loading';
-    axios.get(`${corsHost}${input.value}`).then((response) => {
+    const link = `${corsHost}${input.value}`;
+    state.processing = 'loading';
+    axios.get(link).then((response) => {
       state.currentRssChannel = input.value;
       state.rss = parseXML(response);
       state.inputValue = '';
-      state.inputValid = false;
-      state.processing = false;
-      state.stateUI = 'downtime';
+      state.inputValidity = 'invalid';
+      state.processing = 'downtime';
       state.feeds = [...state.feeds, state.rss];
     }).catch((err) => {
-      state.processing = false;
-      state.stateUI = 'downtime';
+      state.processing = 'downtime';
       state.message = 'Please check your link. RSS feed does not available rigth now!';
+      state.inputValue = '';
+      state.inputValidity = 'invalid';
       console.log(err);
     });
   });
@@ -69,32 +68,35 @@ export default () => {
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
-    if (state.inputValid) {
-      input.classList.remove('is-invalid');
-      input.classList.add('is-valid');
-      button.disabled = false;
-    } else {
-      input.classList.remove('is-valid');
-      input.classList.add('is-invalid');
-      button.disabled = true;
-    }
-
-    if (state.inputValue === '') {
-      input.classList.remove('is-invalid');
-      button.disabled = true;
+    switch (state.inputValidity) {
+      case 'valid':
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        button.disabled = false;
+        break;
+      case 'invalid':
+        input.classList.remove('is-valid');
+        input.classList.add('is-invalid');
+        button.disabled = true;
+        break;
+      default: break;
     }
   });
-  watch(state, ['processing', 'stateUI'], () => {
+  watch(state, 'processing', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
-    if (state.processing) {
-      button.disabled = true;
-      input.disabled = true;
-      button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-    } else {
-      button.disabled = true;
-      input.disabled = false;
-      button.textContent = 'Submit';
+    switch (state.processing) {
+      case 'downtime':
+        button.disabled = false;
+        input.disabled = false;
+        button.textContent = 'Sign In';
+        break;
+      case 'loading':
+        button.disabled = true;
+        input.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        break;
+      default: break;
     }
   });
   watch(state, 'rss', () => {
