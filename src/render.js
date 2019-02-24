@@ -14,7 +14,6 @@ const modalBtnHandler = (event) => {
 export default (data) => {
   const channels = `<ul class="nav nav-pills" role="tablist">
     ${data.map(({ title, description, id }) => {
-    console.log(description);
     return (`
       <li class="nav-item">
         <a class="nav-link" data-toggle="pill" href="#${id}">${title}</a>
@@ -24,7 +23,6 @@ export default (data) => {
   </ul>`;
   const feed = `<div class="tab-content">
     ${data.map(({ items, id }) => {
-    console.log(items);
     return (`
         <div id="${id}" class="container tab-pane"><br>
           <ul class="list-group-flush">
@@ -38,7 +36,7 @@ export default (data) => {
           </ul>
         </div>
       `);
-  })}
+  }).join('')}
   </div>`;
   const feedList = document.querySelector('.feed-list');
   const feedNews = document.querySelector('.feed');
