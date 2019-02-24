@@ -13,7 +13,8 @@ const modalBtnHandler = (event) => {
 
 export default (data) => {
   const channels = `<ul class="nav nav-pills" role="tablist">
-    ${data.map(({ title, description, id }) => {
+    ${data.map(({ title, id }) => {
+    console.log(title);
     return (`
       <li class="nav-item">
         <a class="nav-link" data-toggle="pill" href="#${id}">${title}</a>
@@ -23,6 +24,7 @@ export default (data) => {
   </ul>`;
   const feed = `<div class="tab-content">
     ${data.map(({ items, id }) => {
+    console.log(id);
     return (`
         <div id="${id}" class="container tab-pane"><br>
           <ul class="list-group-flush">
