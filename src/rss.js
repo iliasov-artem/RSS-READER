@@ -38,6 +38,7 @@ export default () => {
       state.inputValue = '';
       state.processing = 'downtime';
       state.feeds = [state.rss, ...state.feeds];
+      state.message = 'Your Channel was added';
     }).catch((err) => {
       state.processing = 'downtime';
       state.message = 'Please check your link. RSS feed does not available rigth now!';
@@ -95,6 +96,6 @@ export default () => {
       default: break;
     }
   });
-  watch(state, 'rss', () => renderHTML(state.feeds));
+  watch(state, 'feeds', () => renderHTML(state.feeds));
   watch(state, 'message', () => renderPopup(state.message));
 };
