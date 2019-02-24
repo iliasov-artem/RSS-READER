@@ -49,41 +49,16 @@ export default () => {
   const updateChecker = () => {
     if (state.feeds.length > 0) {
       state.feeds.forEach((feed) => {
-        const latestNews = feed.items[0];
-        const latestNewsPub = latestNews.querySelector('pubDate').textContent;
-        const sec = Math.round(new Date(latestNewsPub).getTime() / 1000).toString();
         axios.get(feed.link).then((response) => {
+          const newFeed = parseXML(response);
+          const { pubDate } = newFeed;
           const { items } = parseXML(response);
-          console.log(items);
-          const newsToAdd = items.filter((item) => {
-            const date = item.querySelector('pubDate').textContent;
-            const dateSec = Math.round(new Date(date).getTime() / 1000).toString();
-            return dateSec > sec;
-          });
-          if (newsToAdd.length > 0) {
-            const newItems = [...newsToAdd, ...feed.items];
-            feed.items = newItems;
+          if (pubDate > feed.pubDate) {
+            // eslint-disable-next-line no-param-reassign
+            feed = Object.assign(feed, { items }, { pubDate });
           }
         });
-      });/*
-
-      const latestNews = state.rss.items[0];
-      console.log(state.rss.link);
-      // const latestNewsTitle = latestNews.querySelector('title').textContent;
-      const latestNewsPub = latestNews.querySelector('pubDate').textContent;
-      const sec = Math.round(new Date(latestNewsPub).getTime() / 1000).toString();
-      axios.get(`${corsHost}${state.currentRssChannel}`).then((response) => {
-        const { items } = parseXML(response);
-        const newsToAdd = items.filter((item) => {
-          const date = item.querySelector('pubDate').textContent;
-          const dateSec = Math.round(new Date(date).getTime() / 1000).toString();
-          return dateSec > sec;
-        });
-        if (newsToAdd.length > 0) {
-          const newItems = [...newsToAdd, ...state.rss.items];
-          state.rss.items = newItems;
-        }
-      }); */
+      });
     }
   };
   setInterval(updateChecker, 5000);
