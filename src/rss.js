@@ -32,6 +32,7 @@ export default () => {
   const form = document.querySelector('form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    state.message = 'nothing';
     const link = `${corsHost}${input.value}`;
     state.processing = 'loading';
     axios.get(link).then((response) => {
@@ -49,7 +50,7 @@ export default () => {
       state.message = 'success';
     }).catch((err) => {
       state.processing = 'downtime';
-      state.message = 'Please check your link. RSS feed does not available rigth now!';
+      state.message = 'error';
       state.inputValidity = 'invalid';
       state.inputValue = '';
       console.log(err);
@@ -116,7 +117,7 @@ export default () => {
     }
   });
   watch(state, 'channels', () => renderChannels(state.channels, state.lastChannel));
-  watch(state, 'feeds', () => renderFeed(state.feeds, state.lastChannel));
+  watch(state, 'feeds', () => renderFeed(state.feeds));
   watch(state, 'message', () => {
     const messages = {
       success: 'Channel was successfully added',

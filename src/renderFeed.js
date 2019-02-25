@@ -10,7 +10,7 @@ const modalBtnHandler = (event) => {
   modalBody.innerHTML = description.innerHTML;
 };
 
-export default (feeds, activeId) => {
+export default (feeds) => {
   // console.log(feeds);
   const newsListHTML = feeds.map(({ items, id }) => {
     console.log(id);
@@ -26,6 +26,8 @@ export default (feeds, activeId) => {
   }).join('');
   const newsList = document.querySelector('.tab-content');
   newsList.innerHTML = newsListHTML;
+  const activeChannel = document.querySelector('.nav-link.active');
+  const activeId = activeChannel.getAttribute('href').substring(1);
   const activeFeed = document.getElementById(activeId);
   activeFeed.classList.add('active');
   const modalButtons = document.querySelectorAll('[data-target="#myModal"]');
