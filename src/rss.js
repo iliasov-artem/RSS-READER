@@ -2,12 +2,13 @@ import validator from 'validator';
 import axios from 'axios';
 import WatchJS from 'melanke-watchjs';
 import renderPopup from './renderPopup';
-import renderHTML from './render';
 import parseXML from './parser';
+import renderChannels from './renderChannels';
+import renderFeed from './renderFeed';
 
 
 const { watch } = WatchJS;
-const corsHost = 'https://cors-anywhere.herokuapp.com/';
+const corsHost = 'https://cors.io/?'; // https://crossorigin.me/ https://cors-anywhere.herokuapp.com/
 
 export default () => {
   const state = {
@@ -15,9 +16,11 @@ export default () => {
     inputValidity: 'invalid',
     processing: 'downtime',
     currentRssChannel: '',
-    message: '',
+    message: 'nothing',
     rss: {},
+    channels: [],
     feeds: [],
+    lastChannel: '',
   };
   const input = document.getElementById('source');
   input.addEventListener('input', (e) => {
@@ -33,12 +36,16 @@ export default () => {
     state.processing = 'loading';
     axios.get(link).then((response) => {
       state.currentRssChannel = input.value;
-      state.rss = { ...parseXML(response), link };
       state.inputValidity = 'invalid';
       state.inputValue = '';
       state.processing = 'downtime';
-      state.feeds = [state.rss, ...state.feeds];
-      state.message = 'Your Channel was added';
+      const { channel } = parseXML(response);
+      state.lastChannel = channel.id;
+      const feed = { ...parseXML(response).feed, link };
+      feed.id = state.lastChannel;
+      state.channels = [channel, ...state.channels];
+      state.feeds = [feed, ...state.feeds];
+      state.message = 'success';
     }).catch((err) => {
       state.processing = 'downtime';
       state.message = 'Please check your link. RSS feed does not available rigth now!';
@@ -49,20 +56,22 @@ export default () => {
   });
   const updateChecker = () => {
     if (state.feeds.length > 0) {
-      state.feeds.forEach((feed) => {
-        axios.get(feed.link).then((response) => {
-          const newFeed = parseXML(response);
-          const { pubDate } = newFeed;
-          const { items } = parseXML(response);
-          if (pubDate > feed.pubDate) {
+      state.feeds.forEach((item) => {
+        axios.get(item.link).then((response) => {
+          const { feed } = parseXML(response);
+          const { items, pubDate } = feed;
+          if (pubDate > item.pubDate) {
             // eslint-disable-next-line no-param-reassign
-            feed = Object.assign(feed, { items }, { pubDate });
+            item.pubDate = pubDate;
+            // eslint-disable-next-line no-param-reassign
+            item.items = items;
           }
-        });
+        }).catch(err => console.error('error', err.message))
+          .finally(() => setTimeout(updateChecker, 5000));
       });
     }
   };
-  setInterval(updateChecker, 5000);
+  setTimeout(updateChecker, 5000);
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
@@ -96,6 +105,23 @@ export default () => {
       default: break;
     }
   });
-  watch(state, 'feeds', () => renderHTML(state.feeds));
-  watch(state, 'message', () => renderPopup(state.message));
+  watch(state, 'channels', () => renderChannels(state.channels, state.lastChannel));
+  watch(state, 'feeds', () => renderFeed(state.feeds, state.lastChannel));
+  watch(state, 'message', () => {
+    const messages = {
+      success: 'Channel was successfully added',
+      error: 'Something wrong with your link. Channel is not available!',
+    };
+    switch (state.message) {
+      case 'nothing':
+        break;
+      case 'success':
+        renderPopup(messages.success);
+        break;
+      case 'error':
+        renderPopup(messages.error);
+        break;
+      default: break;
+    }
+  });
 };
