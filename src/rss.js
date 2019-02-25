@@ -1,6 +1,7 @@
 import validator from 'validator';
 import axios from 'axios';
 import WatchJS from 'melanke-watchjs';
+import { uniqueId } from 'lodash';
 import renderPopup from './renderPopup';
 import parseXML from './parser';
 import renderChannels from './renderChannels';
@@ -8,7 +9,7 @@ import renderFeed from './renderFeed';
 
 
 const { watch } = WatchJS;
-const corsHost = 'https://cors.io/?'; // https://crossorigin.me/ https://cors-anywhere.herokuapp.com/
+const corsHost = 'https://cors.io/?'; // https://crossorigin.me/ https://cors-anywhere.herokuapp.com/ https://cors.io/?
 
 export default () => {
   const state = {
@@ -36,16 +37,16 @@ export default () => {
     const link = `${corsHost}${input.value}`;
     state.processing = 'loading';
     axios.get(link).then((response) => {
+      const id = `feed${uniqueId()}`;
       state.currentRssChannel = input.value;
       state.inputValidity = 'invalid';
       state.inputValue = '';
       state.processing = 'downtime';
-      const { channel } = parseXML(response);
-      state.lastChannel = channel.id;
-      const id = state.lastChannel;
+      const channel = { ...parseXML(response).channel, id };
+      state.lastChannel = id;
       const feed = { ...parseXML(response).feed, link, id };
       state.channels = [channel, ...state.channels];
-      state.feeds.unshift(feed);
+      state.feeds = [feed, ...state.feeds];
       console.log(state.feeds);
       state.message = 'success';
     }).catch((err) => {
@@ -71,18 +72,13 @@ export default () => {
             };
             state.feeds[index] = { ...newFeed };
             state.feeds = [...state.feeds];
-            console.log(state.feeds);/*
-            // eslint-disable-next-line no-param-reassign
-            item.pubDate = pubDate;
-            // eslint-disable-next-line no-param-reassign
-            item.items = items; */
           }
         }).catch(err => console.error('error', err.message))
-          .finally(() => setTimeout(updateChecker, 5000));
+          .finally(() => setTimeout(updateChecker, 10000));
       });
     }
   };
-  setTimeout(updateChecker, 5000);
+  setTimeout(updateChecker, 10000);
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
@@ -117,7 +113,7 @@ export default () => {
     }
   });
   watch(state, 'channels', () => renderChannels(state.channels, state.lastChannel));
-  watch(state, 'feeds', () => renderFeed(state.feeds));
+  watch(state, 'feeds', () => renderFeed(state.feeds, state.lastChannel));
   watch(state, 'message', () => {
     const messages = {
       success: 'Channel was successfully added',

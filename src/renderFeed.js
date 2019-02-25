@@ -11,7 +11,6 @@ const modalBtnHandler = (event) => {
 };
 
 export default (feeds) => {
-  // console.log(feeds);
   const newsListHTML = feeds.map(({ items, id }) => {
     console.log(id);
     return `

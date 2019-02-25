@@ -1,15 +1,12 @@
-import { uniqueId } from 'lodash';
 
 export default (xml) => {
   const parse = new DOMParser();
   const parsedXML = parse.parseFromString(xml.data, 'application/xml');
-  const id = `feed${uniqueId()}`;
   const channelTitle = parsedXML.querySelector('title').textContent;
   const channelDescription = parsedXML.querySelector('description').textContent;
   const channel = {
     title: channelTitle,
     description: channelDescription,
-    id,
   };
   const channelFeed = Array.from(parsedXML.querySelectorAll('item'));
   const latestNews = channelFeed[0];
