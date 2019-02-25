@@ -12,7 +12,7 @@ export default (channels, activeId) => {
   if (channels.length > 0) {
     document.querySelector('.channels-container').classList.remove('d-none');
   }
-  const channelsHTML = channels.map(channel => getChannelHTML(channel)).join(''); // \n
+  const channelsHTML = channels.map(channel => getChannelHTML(channel)).join(''); //
   const channelsList = document.querySelector('.nav');
   channelsList.innerHTML = channelsHTML;
   const activeChannel = document.querySelector(`a[href="#${activeId}"]`);

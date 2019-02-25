@@ -11,9 +11,9 @@ const modalBtnHandler = (event) => {
 };
 
 export default (feeds, activeId) => {
-  console.log(feeds);
+  // console.log(feeds);
   const newsListHTML = feeds.map(({ items, id }) => {
-    console.log(items);
+    // console.log(items);
     return `
       <div id="${id}" class="container tab-pane"><br>
         <ul class="list-group-flush">

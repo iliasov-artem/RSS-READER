@@ -41,10 +41,11 @@ export default () => {
       state.processing = 'downtime';
       const { channel } = parseXML(response);
       state.lastChannel = channel.id;
-      const feed = { ...parseXML(response).feed, link };
-      feed.id = state.lastChannel;
+      const id = state.lastChannel;
+      const feed = { ...parseXML(response).feed, link, id };
       state.channels = [channel, ...state.channels];
-      state.feeds = [feed, ...state.feeds];
+      state.feeds.unshift(feed);
+      console.log(state.feeds);
       state.message = 'success';
     }).catch((err) => {
       state.processing = 'downtime';
@@ -56,15 +57,24 @@ export default () => {
   });
   const updateChecker = () => {
     if (state.feeds.length > 0) {
-      state.feeds.forEach((item) => {
+      state.feeds.forEach((item, index) => {
         axios.get(item.link).then((response) => {
           const { feed } = parseXML(response);
           const { items, pubDate } = feed;
           if (pubDate > item.pubDate) {
+            const newFeed = {
+              items,
+              pubDate,
+              link: item.link,
+              id: item.id,
+            };
+            state.feeds[index] = { ...newFeed };
+            state.feeds = [...state.feeds];
+            console.log(state.feeds);/*
             // eslint-disable-next-line no-param-reassign
             item.pubDate = pubDate;
             // eslint-disable-next-line no-param-reassign
-            item.items = items;
+            item.items = items; */
           }
         }).catch(err => console.error('error', err.message))
           .finally(() => setTimeout(updateChecker, 5000));
