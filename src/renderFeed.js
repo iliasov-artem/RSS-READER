@@ -11,8 +11,8 @@ const modalBtnHandler = (event) => {
 };
 
 export default (feeds) => {
-  const newsListHTML = feeds.map(({ items, id }) => {
-    console.log(id);
+  const newsListHTML = feeds.map(({ items, id }) => { // eslint-disable-line arrow-body-style
+    // console.log(id);
     return `
       <div id="${id}" class="container tab-pane"><br>
         <ul class="list-group-flush">
