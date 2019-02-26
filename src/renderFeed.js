@@ -28,7 +28,9 @@ export default (feeds) => {
   const activeChannel = document.querySelector('.nav-link.active');
   const activeId = activeChannel.getAttribute('href').substring(1);
   const activeFeed = document.getElementById(activeId);
-  activeFeed.classList.add('active');
+  if (activeFeed) {
+    activeFeed.classList.add('active');
+  }
   const modalButtons = document.querySelectorAll('[data-target="#myModal"]');
   modalButtons.forEach((btn) => {
     btn.addEventListener('click', modalBtnHandler);

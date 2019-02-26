@@ -47,7 +47,6 @@ export default () => {
       const feed = { ...parseXML(response).feed, link, id };
       state.channels = [channel, ...state.channels];
       state.feeds = [feed, ...state.feeds];
-      console.log(state.feeds);
       state.message = 'success';
     }).catch((err) => {
       state.processing = 'downtime';
@@ -56,7 +55,7 @@ export default () => {
       state.inputValue = '';
       console.log(err);
     });
-  });
+  }); /*
   const updateChecker = () => {
     if (state.feeds.length > 0) {
       state.feeds.forEach((item, index) => {
@@ -78,7 +77,7 @@ export default () => {
       });
     }
   };
-  setTimeout(updateChecker, 10000);
+  setTimeout(updateChecker, 10000); */
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
@@ -131,4 +130,27 @@ export default () => {
       default: break;
     }
   });
+  const checkUpdate2 = (feeds) => {
+    if (feeds.length === 0) {
+      setTimeout(checkUpdate2, 5000, state.feeds);
+      return;
+    }
+    const requests = feeds.map(feed => axios.get(feed.link));
+    axios.all(requests).then((responses) => {
+      const newFeeds = responses.map(res => ({ ...parseXML(res).feed }));
+      const oldFeedsDate = feeds.map(feed => feed.pubDate);
+      const oldLatest = Math.max(...oldFeedsDate);
+      const newFeedsDate = newFeeds.map(feed => feed.pubDate);
+      const newLatest = Math.max(...newFeedsDate);
+      if (newLatest > oldLatest) {
+        const feedsToUpdate = feeds.map((feed, index) => {
+          const { items } = newFeeds[index];
+          const { pubDate } = newFeeds[index];
+          return { ...feed, items, pubDate };
+        });
+        state.feeds = feedsToUpdate;
+      }
+    }).catch(err => console.error('error', err)).finally(() => setTimeout(checkUpdate2, 5000, state.feeds));
+  };
+  setTimeout(checkUpdate2, 5000, state.feeds);
 };
