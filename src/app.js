@@ -2,11 +2,10 @@ import validator from 'validator';
 import axios from 'axios';
 import WatchJS from 'melanke-watchjs';
 import { uniqueId } from 'lodash';
-import renderPopup from './renderPopup';
+import renderPopup from './renderers/renderPopup';
 import parseXML from './parser';
-import renderChannels from './renderChannels';
-import renderFeed from './renderFeed';
-
+import renderChannels from './renderers/renderChannels';
+import renderFeed from './renderers/renderFeed';
 
 const { watch } = WatchJS;
 const corsHost = 'https://cors.io/?'; // https://crossorigin.me/ https://cors-anywhere.herokuapp.com/ https://cors.io/?
@@ -30,6 +29,7 @@ export default () => {
     state.inputValue = value;
     state.inputValidity = (validator.isURL(value) && value !== state.currentRssChannel) ? 'valid' : 'invalid';
   });
+
   const form = document.querySelector('form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -55,29 +55,8 @@ export default () => {
       state.inputValue = '';
       console.log(err);
     });
-  }); /*
-  const updateChecker = () => {
-    if (state.feeds.length > 0) {
-      state.feeds.forEach((item, index) => {
-        axios.get(item.link).then((response) => {
-          const { feed } = parseXML(response);
-          const { items, pubDate } = feed;
-          if (pubDate > item.pubDate) {
-            const newFeed = {
-              items,
-              pubDate,
-              link: item.link,
-              id: item.id,
-            };
-            state.feeds[index] = { ...newFeed };
-            state.feeds = [...state.feeds];
-          }
-        }).catch(err => console.error('error', err.message))
-          .finally(() => setTimeout(updateChecker, 10000));
-      });
-    }
-  };
-  setTimeout(updateChecker, 10000); */
+  });
+
   watch(state, 'inputValue', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
@@ -95,6 +74,7 @@ export default () => {
       default: break;
     }
   });
+
   watch(state, 'processing', () => {
     input.value = state.inputValue;
     const button = document.querySelector('button');
@@ -111,8 +91,11 @@ export default () => {
       default: break;
     }
   });
+
   watch(state, 'channels', () => renderChannels(state.channels, state.lastChannel));
+
   watch(state, 'feeds', () => renderFeed(state.feeds, state.lastChannel));
+
   watch(state, 'message', () => {
     const messages = {
       success: 'Channel was successfully added',
@@ -130,9 +113,10 @@ export default () => {
       default: break;
     }
   });
-  const checkUpdate2 = (feeds) => {
+
+  const checkUpdate = (feeds) => {
     if (feeds.length === 0) {
-      setTimeout(checkUpdate2, 5000, state.feeds);
+      setTimeout(checkUpdate, 5000, state.feeds);
       return;
     }
     const requests = feeds.map(feed => axios.get(feed.link));
@@ -150,7 +134,7 @@ export default () => {
         });
         state.feeds = feedsToUpdate;
       }
-    }).catch(err => console.error('error', err)).finally(() => setTimeout(checkUpdate2, 5000, state.feeds));
+    }).catch(err => console.error('error', err)).finally(() => setTimeout(checkUpdate, 5000, state.feeds));
   };
-  setTimeout(checkUpdate2, 5000, state.feeds);
+  setTimeout(checkUpdate, 5000, state.feeds);
 };
