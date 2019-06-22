@@ -1,5 +1,5 @@
 ## RSS-Reader
-https://travis-ci.com/iliasov-artem/RSS-READER.svg?branch=master
+[![Build Status](https://travis-ci.com/iliasov-artem/RSS-READER.svg?branch=master)](https://travis-ci.com/iliasov-artem/RSS-READER)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0855a7a7cf574a4a578a/maintainability)](https://codeclimate.com/github/iliasov-artem/project-lvl3-s402/maintainability)
 
 http://rss-art-il.surge.sh/
